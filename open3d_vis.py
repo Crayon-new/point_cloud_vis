@@ -13,7 +13,7 @@ except ImportError:
 
 def _draw_points(points,
                  vis,
-                 points_size=2,
+                 points_size=10,
                  point_color=(0.5, 0.5, 0.5),
                  mode='xyz'):
     """Draw points on visualizer.
@@ -32,7 +32,7 @@ def _draw_points(points,
     Returns:
         tuple: points, color of each point.
     """
-    vis.get_render_option().point_size = points_size  # set points size
+    vis.get_render_option().point_size = 2  # set points size
     if isinstance(points, torch.Tensor):
         points = points.cpu().numpy()
 
@@ -103,11 +103,19 @@ def _draw_bboxes(bbox3d,
                 rot_axis] / 2  # bottom center to gravity center
         box3d = geometry.OrientedBoundingBox(center, rot_mat, dim)
 
-
         line_set = geometry.LineSet.create_from_oriented_bounding_box(box3d)
         line_set.paint_uniform_color(bbox_color)
+        mat = o3d.visualization.rendering.MaterialRecord()
+        mat.shader = 'unlitline'
+        mat.line_width = 10
+        # o3d.visualization.draw({
+        #     "name":"lines",
+        #     "geometry":line_set,
+        #     "material":mat,
+        # })
         # draw bboxes on visualizer
         vis.add_geometry(line_set)
+
 
         # change the color of points which are in box
         if pcd is not None and mode == 'xyz':
@@ -349,7 +357,7 @@ class Visualizer(object):
                  points,
                  bbox3d=None,
                  save_path=None,
-                 points_size=2,
+                 points_size=0.5,
                  point_color=(0.5, 0.5, 0.5),
                  bbox_color=(0, 1, 0),
                  points_in_box_color=(1, 0, 0),
